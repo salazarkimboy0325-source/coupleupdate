@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Schedule - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="dashboard-nav">
+        <div class="nav-brand">
+            <h2>💑 Our Schedule</h2>
+        </div>
+        <div class="nav-user">
+            <span id="user-greeting">Welcome, <span id="user-name">Loading...</span></span>
+            <span id="partner-status" class="partner-badge">👤 Partner: <span id="partner-name">Not connected</span></span>
+            <button onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="invite-section">
+                <h3>Invite Your Partner</h3>
+                <p>Share this code:</p>
+                <div class="invite-code" id="invite-code-display">Loading...</div>
+                <button onclick="copyInviteCode()" class="secondary-btn">
+                    <i class="fas fa-copy"></i> Copy Code
+                </button>
+            </div>
+
+            <div class="quick-stats">
+                <h3>Today's Overview</h3>
+                <div class="stat-item">
+                    <span class="stat-label">Events Today:</span>
+                    <span class="stat-value" id="today-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Upcoming:</span>
+                    <span class="stat-value" id="upcoming-count">0</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Date Navigation -->
+            <div class="date-navigation">
+                <button onclick="changeDate('prev')" class="date-nav-btn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <h2 id="current-date-display"></h2>
+                <button onclick="changeDate('next')" class="date-nav-btn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <button onclick="goToToday()" class="today-btn">Today</button>
+            </div>
+
+            <!-- Add Event Form -->
+            <div class="add-event-card">
+                <h3><i class="fas fa-plus-circle"></i> Add New Event</h3>
+                <form onsubmit="addEvent(event)" class="add-event-form">
+                    <input type="text" id="event-title" placeholder="What's the plan?" required>
+                    <input type="time" id="event-time" required>
+                    <select id="event-category">
+                        <option value="date">💕 Date Night</option>
+                        <option value="work">💼 Work</option>
+                        <option value="personal">🌟 Personal</option>
+                        <option value="family">👨‍👩‍👧 Family</option>
+                        <option value="other">📌 Other</option>
+                    </select>
+                    <textarea id="event-notes" placeholder="Any notes? (optional)"></textarea>
+                    <button type="submit" class="primary-btn">Add to Schedule</button>
+                </form>
+            </div>
+
+            <!-- Schedule Timeline -->
+            <div class="schedule-timeline">
+                <h3>Schedule for <span id="selected-date"></span></h3>
+                <div id="schedule-list" class="schedule-list">
+                    <!-- Events will be loaded here dynamically -->
+                    <div class="loading-events">Loading events...</div>
+                </div>
+            </div>
+
+            <!-- Mini Calendar View -->
+            <div class="mini-calendar">
+                <h3>Quick View</h3>
+                <div id="mini-calendar-grid" class="calendar-grid">
+                    <!-- Calendar days will be generated here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Event Modal -->
+    <div id="edit-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeEditModal()">&times;</span>
+            <h3>Edit Event</h3>
+            <form onsubmit="updateEvent(event)" id="edit-form">
+                <input type="hidden" id="edit-event-id">
+                <div class="input-group">
+                    <label for="edit-title">Title</label>
+                    <input type="text" id="edit-title" required>
+                </div>
+                <div class="input-group">
+                    <label for="edit-time">Time</label>
+                    <input type="time" id="edit-time" required>
+                </div>
+                <div class="input-group">
+                    <label for="edit-category">Category</label>
+                    <select id="edit-category">
+                        <option value="date">💕 Date Night</option>
+                        <option value="work">💼 Work</option>
+                        <option value="personal">🌟 Personal</option>
+                        <option value="family">👨‍👩‍👧 Family</option>
+                        <option value="other">📌 Other</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="edit-notes">Notes</label>
+                    <textarea id="edit-notes"></textarea>
+                </div>
+                <button type="submit" class="primary-btn">Save Changes</button>
+                <button type="button" onclick="deleteEvent()" class="danger-btn">Delete Event</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="dashboard.js"></script>
+
+    <!-- Notification Container -->
+<div id="notification-container"></div>
+</body>
+</html>

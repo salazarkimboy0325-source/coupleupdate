@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is in couple
+    function isInCouple(coupleId) {
+      return coupleId == request.auth.uid || 
+             exists(/databases/$(database)/documents/userCouples/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/userCouples/$(request.auth.uid)).data.coupleId == coupleId;
+    }
+    
+    // Helper function to check if user is invited to couple (via invites collection)
+    function isInvitedToCouple(coupleId) {
+      return exists(/databases/$(database)/documents/invites/$(coupleId)) &&
+             get(/databases/$(database)/documents/invites/$(coupleId)).data.coupleId == coupleId &&
+             get(/databases/$(database)/documents/invites/$(coupleId)).data.used == false;
+    }
+    
+    // Couples collection
+    match /couples/{coupleId} {
+      allow read: if request.auth != null && 
+                  (request.auth.uid == coupleId || 
+                   isInCouple(coupleId));
+      allow write: if request.auth != null && 
+                   (request.auth.uid == coupleId || 
+                    isInCouple(coupleId) ||
+                    isInvitedToCouple(coupleId));
+    }
+    
+    // Invites collection
+    // Allow unauthenticated read to verify invite code before registration
+    // Only allow reading if invite exists and hasn't been used yet (used == false)
+    match /invites/{inviteCode} {
+      allow read: if request.auth != null || (resource != null && resource.data.used == false);
+      allow write: if request.auth != null;
+    }
+    
+    // UserCouples collection
+    match /userCouples/{userId} {
+      allow read, write: if request.auth != null && 
+                         request.auth.uid == userId;
+    }
+    
+    // Schedules collection
+    match /schedules/{eventId} {
+      allow read: if request.auth != null && 
+                  isInCouple(resource.data.coupleId);
+      allow write: if request.auth != null && 
+                  isInCouple(request.resource.data.coupleId);
+    }
+    
+    // Notifications collection
+    match /notifications/{notificationId} {
+      allow read, write: if request.auth != null && 
+                         request.auth.uid == resource.data.userId;
+    }
+    
+    // Presence/Status collection
+    match /status/{userId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

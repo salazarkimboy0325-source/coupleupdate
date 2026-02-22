@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Couple Schedule - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1>💑 Our Special Schedule</h1>
+            <p>Stay connected with your partner's daily plans</p>
+        </div>
+
+        <!-- Login/Registration Tabs -->
+        <div class="login-container">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+                <button class="tab-btn" onclick="switchTab('register')">Register</button>
+                <button class="tab-btn" onclick="switchTab('invite')">Have an Invite?</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="login-form" class="form active">
+                <h2>Welcome Back!</h2>
+                <form onsubmit="handleLogin(event)">
+                    <div class="input-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required placeholder="couple@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="primary-btn">Login to Dashboard</button>
+                </form>
+            </div>
+
+            <!-- Registration Form -->
+            <div id="register-form" class="form">
+                <h2>Create Your Couple Space</h2>
+                <p class="form-note">First person registers, then invite your partner</p>
+                <form onsubmit="handleRegister(event)">
+                    <div class="input-group">
+                        <label for="reg-name">Your Name</label>
+                        <input type="text" id="reg-name" required placeholder="e.g., Alex">
+                    </div>
+                    <div class="input-group">
+                        <label for="reg-email">Email</label>
+                        <input type="email" id="reg-email" required placeholder="you@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" required placeholder="Minimum 6 characters">
+                    </div>
+                    <div class="input-group">
+                        <label for="partner-name">Partner's Name</label>
+                        <input type="text" id="partner-name" required placeholder="e.g., Sam">
+                    </div>
+                    <button type="submit" class="primary-btn">Create Account & Generate Invite</button>
+                </form>
+            </div>
+
+            <!-- Invite Code Form -->
+            <div id="invite-form" class="form">
+                <h2>Join Your Partner</h2>
+                <p class="form-note">Enter the invitation code your partner shared</p>
+                <form onsubmit="handleInviteRegister(event)">
+                    <div class="input-group">
+                        <label for="invite-name">Your Name</label>
+                        <input type="text" id="invite-name" required placeholder="e.g., Sam">
+                    </div>
+                    <div class="input-group">
+                        <label for="invite-email">Your Email</label>
+                        <input type="email" id="invite-email" required placeholder="you@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label for="invite-password">Password</label>
+                        <input type="password" id="invite-password" required placeholder="Minimum 6 characters">
+                    </div>
+                    <div class="input-group">
+                        <label for="invite-code">Invitation Code</label>
+                        <input type="text" id="invite-code" required placeholder="e.g., COUPLE123">
+                    </div>
+                    <button type="submit" class="primary-btn">Join Couple Space</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="loading-overlay hidden">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
